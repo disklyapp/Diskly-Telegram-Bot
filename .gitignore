@@ -10,3 +10,5 @@ node_modules
 /serviceAccount.json
 
 /generated/prisma
+/node_modules
+node_modules
