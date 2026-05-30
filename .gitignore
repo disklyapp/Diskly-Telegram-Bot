@@ -8,3 +8,5 @@ serviceAccount.json
 node_modules
 /.env
 /serviceAccount.json
+
+/generated/prisma

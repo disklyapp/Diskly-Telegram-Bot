@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model SystemSetting {
+  id                     Int     @id @default(1)
+  earningRatePer1000Views Float   @default(1.0)
+  telegramUploadEnabled  Boolean @default(true)
+  minimumPayoutThreshold Float   @default(10.0)
+}
+
+model Admin {
+  id                 Int      @id @default(autoincrement())
+  email              String   @unique
+  password           String
+  name               String?
+  profilePic         String?
+  telegramUploadId   String?  @unique
+  telegramChatId     String?  @unique
+  dailyUploadLimit   Int      @default(10)
+  monthlyUploadLimit Int      @default(300)
+  balance            Float    @default(0.0)
+  totalEarnings      Float    @default(0.0)
+  isActive           Boolean  @default(true)
+  videos             Video[]
+  payouts            PayoutRequest[]
+  analytics          DailyAnalytic[]
+  createdAt          DateTime @default(now())
+}
+
+model Video {
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String?
+  streamUrl    String
+  downloadKey  String
+  thumbnailUrl String
+  views        Int      @default(0)
+  likes        Int      @default(0)
+  bookmarks    Int      @default(0)
+  adminId      Int
+  admin        Admin    @relation(fields: [adminId], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model PayoutRequest {
+  id             Int      @id @default(autoincrement())
+  adminId        Int
+  amount         Float
+  paymentMethod  String   
+  paymentDetails String   
+  status         String   @default("PENDING") 
+  admin          Admin    @relation(fields: [adminId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model DailyAnalytic {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  date      DateTime @db.Date
+  views     Int      @default(0)
+  likes     Int      @default(0)
+  earnings  Float    @default(0)
+  admin     Admin    @relation(fields: [adminId], references: [id])
+
+  @@unique([adminId, date])
+}
